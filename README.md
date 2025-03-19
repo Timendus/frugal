@@ -17,7 +17,7 @@ the home page, making it a great starting page for your local network.
 ## Build the docker image
 
 ```bash
-git clone
+git clone git@github.com:Timendus/frugal.git
 cd frugal
 make build
 ```
@@ -38,7 +38,7 @@ There's two files of note:
 ### websites.txt
 
 This is a plain text file with URLs, one per line, of the websites that you wish
-to have availeble offline. It's used as an input file for `wget -i`.
+to have available offline. It's used as an input file for `wget -i`.
 
 ### links.json
 
