@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Offline Internet</title>
+    <title>Frugal Search</title>
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <!-- Favicon is licensed CC BY 4.0. Design by Kalash/Anton. https://iconscout.com/free-icon/globe-2690355_2232858 -->
+
     <script type="module">
       // Make search work
       const search = document.getElementById("search");
@@ -28,16 +31,20 @@
 
         results = document.getElementById("results");
         results.innerHTML = "";
-        for (const item of json) {
-          results.innerHTML += `
-            <li>
-                <a href="${item.path}">
-                    <h3>${item.title}</h3>
-                    <p>${item.snippet}</p>
-                    <p class="url">${item.path.substr(1)}</p>
-                </a>
-            </li>
-          `;
+        if (json) {
+          for (const item of json) {
+            results.innerHTML += `
+              <li>
+                  <a href="${item.path}">
+                      <h3>${item.title}</h3>
+                      <p>${item.snippet}</p>
+                      <p class="url">${item.path}</p>
+                  </a>
+              </li>
+            `;
+          }
+        } else {
+          results.innerHTML = "No results found";
         }
       });
 
