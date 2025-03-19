@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline Internet</title>
+    <script type="module">
+      // Make search work
+      const search = document.getElementById("search");
+      search.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (search.querySelector("input").value == "") {
+          results = document.getElementById("results");
+          results.innerHTML = "";
+          return;
+        }
+
+        let json = null;
+        try {
+          const query = new URLSearchParams(new FormData(search)).toString();
+          const result = await fetch("/search?" + query);
+          json = await result.json();
+        } catch (e) {
+          alert("Could not search at this time");
+          return;
+        }
+
+        results = document.getElementById("results");
+        results.innerHTML = "";
+        for (const item of json) {
+          results.innerHTML += `
+            <li>
+                <a href="${item.path}">
+                    <h3>${item.title}</h3>
+                    <p>${item.snippet}</p>
+                    <p class="url">${item.path.substr(1)}</p>
+                </a>
+            </li>
+          `;
+        }
+      });
+
+      // Load links to other resources
+      const resources = document.getElementById("resources");
+      try {
+        const result = await fetch("/links.json");
+        const links = await result.json();
+        const linksList = document.getElementById("links");
+        linksList.innerHTML = "";
+        for (const link of links) {
+          linksList.innerHTML += `
+          <li>
+            <a href="${link.url}">
+              <img src="${link.image}"/>
+              ${link.title}
+            </a>
+          </li>
+        `;
+        }
+        resources.style.display = links.length > 0 ? "block" : "none";
+      } catch (e) {
+        resources.style.display = "none";
+        console.error(e);
+      }
+    </script>
+    <style>
+      @font-face {
+        font-family: "ProductSans";
+        src: url("Product Sans Regular.ttf") format("truetype");
+      }
+      @font-face {
+        font-family: "ProductSansBold";
+        src: url("Product Sans Bold.ttf") format("truetype");
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      main {
+        max-width: 600px;
+        margin: auto;
+        font-family: ProductSans;
+
+        @media screen and (max-width: 500px) {
+          padding: 0 1em;
+        }
+      }
+      b {
+        font-family: ProductSansBold;
+      }
+      h1 {
+        font-size: 7em;
+        letter-spacing: -0.1em;
+        text-align: center;
+        margin: 1.5em 0 0.5em 0;
+
+        & #F {
+          color: #4285f4;
+        }
+        & #r {
+          color: #ea4335;
+        }
+        & #u {
+          color: #fbbc05;
+        }
+        & #g {
+          color: #4285f4;
+        }
+        & #a {
+          color: #34a853;
+        }
+        & #l {
+          color: #ea4335;
+        }
+
+        @media screen and (max-width: 500px) {
+          font-size: 5em;
+        }
+      }
+      form {
+        width: 100%;
+        height: 3rem;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.1);
+        display: flex;
+
+        & input {
+          width: 100%;
+          height: 100%;
+          padding: 0 1em 0 2em;
+          background: transparent;
+          border: 0;
+          outline: none;
+          font-size: 1.1em;
+        }
+        & button {
+          width: 7em;
+          height: 100%;
+          border: 0;
+          border-left: 1px solid rgba(0, 0, 0, 0.2);
+          background: transparent;
+          cursor: pointer;
+          font-size: 1.1em;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+      ul.results {
+        list-style: none;
+        margin-top: 2em;
+
+        & a {
+          display: block;
+          width: 100%;
+          height: 100%;
+          padding: 0.5em 1em;
+
+          color: black;
+          text-decoration: none;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+          }
+
+          & p,
+          & h3 {
+            margin: 0.3em 0;
+          }
+
+          p {
+            color: #444;
+          }
+
+          & p.url {
+            color: rgb(8, 132, 8);
+          }
+        }
+      }
+      h2 {
+        margin: 10em 0 1em 0;
+        text-align: center;
+      }
+      ul.links {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1em;
+        margin-bottom: 10em;
+
+        & a {
+          display: block;
+          width: 180px;
+          height: 100%;
+          padding: 0.5em 1em;
+
+          color: black;
+          text-decoration: none;
+          text-align: center;
+
+          & img {
+            display: block;
+            width: 100%;
+            height: 5em;
+            object-fit: cover;
+            margin-bottom: 0.7em;
+          }
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>
+        <span id="F">F</span>
+        <span id="r">r</span>
+        <span id="u">u</span>
+        <span id="g">g</span>
+        <span id="a">a</span>
+        <span id="l">l</span>
+      </h1>
+      <form action="/search" method="GET" id="search">
+        <input type="text" name="q" placeholder="What are you looking for?" />
+        <button type="submit">Search</button>
+      </form>
+      <ul class="results" id="results"></ul>
+      <section id="resources">
+        <h2>Other resources</h2>
+        <ul class="links" id="links"></ul>
+      </section>
+    </main>
+  </body>
+</html>
